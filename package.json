@@ -1,6 +1,6 @@
 {
   "name": "@skyispainted/wps-xiezuo-sdk",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "WPS协作机器人SDK - 用于构建WPS协作企业机器人应用",
   "keywords": [
     "wps",
