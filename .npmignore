@@ -1,0 +1,35 @@
+# VCS / CI / editor metadata
+.git/
+.github/
+.vscode/
+.DS_Store
+
+# Dependencies and lockfiles
+node_modules/
+pnpm-lock.yaml
+package-lock.json
+
+# Local logs and secrets
+*.log
+npm-debug.log*
+credentials.json
+.env
+
+# Development files
+.claude/
+.npmignore
+.oxlintrc.json
+.oxfmtrc.json
+oxfmt.json
+tsconfig.json
+CLAUDE.md
+
+# Tests
+test/
+tests/
+*.test.ts
+*.spec.ts
+
+# Source files (only dist is published)
+src/
+index.ts

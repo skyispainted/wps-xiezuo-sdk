@@ -1,0 +1,63 @@
+{
+  "name": "@skyispainted/wps-xiezuo-sdk",
+  "version": "1.0.0",
+  "description": "WPS协作机器人SDK - 用于构建WPS协作企业机器人应用",
+  "keywords": [
+    "wps",
+    "wps365",
+    "xiezuo",
+    "bot",
+    "sdk",
+    "collaboration",
+    "chatbot",
+    "robot"
+  ],
+  "homepage": "https://github.com/skyispainted/wps-xiezuo-sdk",
+  "license": "GPL-3.0",
+  "author": "skyispainted",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skyispainted/wps-xiezuo-sdk.git"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "format": "oxfmt --write package.json tsconfig.json src/*.ts",
+    "format:check": "oxfmt --check package.json tsconfig.json src/*.ts",
+    "lint": "oxlint --type-aware src",
+    "lint:fix": "oxlint --type-aware --fix src && pnpm format",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "type-check": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.0",
+    "oxfmt": "0.34.0",
+    "oxlint": "^1.49.0",
+    "typescript": "^5.3.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
