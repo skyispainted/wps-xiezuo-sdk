@@ -62,6 +62,8 @@ export type {
   WPSResponse,
   Mention,
   RichTextElement,
+  UserMailbox,
+  UserIdType,
 } from "./src/client.js";
 
 // 富文本辅助函数

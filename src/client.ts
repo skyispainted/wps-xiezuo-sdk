@@ -52,6 +52,23 @@ function buildMentions(mentions?: Mention[]): any[] | undefined {
   });
 }
 
+/**
+ * 用户邮箱信息
+ */
+export interface UserMailbox {
+  /** 邮箱地址 */
+  email_address: string;
+  /** 邮箱类型: user=用户邮箱 */
+  email_type: "user";
+  /** 是否为主邮箱 */
+  is_primary: boolean;
+}
+
+/**
+ * 用户ID类型
+ */
+export type UserIdType = "internal" | "external";
+
 export interface WPSResponse {
   result: number;
   msg?: string;
@@ -137,6 +154,19 @@ export class WPSClient {
     body: any,
     accessToken: string
   ): Promise<any> {
+    return this.sendV7RequestWithHeaders(method, path, body, accessToken, {});
+  }
+
+  /**
+   * 发送V7请求（支持自定义headers）
+   */
+  private async sendV7RequestWithHeaders(
+    method: string,
+    path: string,
+    body: any,
+    accessToken: string,
+    extraHeaders: Record<string, string>
+  ): Promise<any> {
     const url = `${this.apiUrl}${path}`;
     const contentType = body ? "application/json" : undefined;
     const ksoDate = getRFC1123Date();
@@ -163,6 +193,7 @@ export class WPSClient {
           "X-Kso-Date": ksoDate,
           "X-Kso-Authorization": ksoSignature,
           "Authorization": `Bearer ${accessToken}`,
+          ...extraHeaders,
         },
         signal: controller.signal,
       };
@@ -633,6 +664,49 @@ export class WPSClient {
     }
 
     return { result: result.code, msg: result.msg, message_id: result.data?.message_id };
+  }
+
+  /**
+   * 根据用户ID获取用户邮箱信息
+   *
+   * API文档: https://openapi.wps.cn/v7/user_mailboxes/{user_id}
+   * 方法: GET
+   * 权限: kso.user_mailbox.read 或 kso.user_mailbox.readwrite
+   *
+   * @param userId 用户ID，支持user_id或ex_user_id
+   * @param idType 用户ID类型，"internal"=内部user_id，"external"=外部ex_user_id，默认为internal
+   * @returns 用户邮箱信息
+   */
+  async getUserMailbox(
+    userId: string,
+    idType: UserIdType = "internal"
+  ): Promise<UserMailbox> {
+    if (!userId) {
+      throw new Error("userId 不能为空");
+    }
+
+    const accessToken = await oauthTokenManager.getAccessToken(
+      this.appId,
+      this.secretKey,
+      this.apiUrl
+    );
+
+    const path = `/v7/user_mailboxes/${userId}`;
+
+    // 构造请求，添加X-Kso-Id-Type header
+    const result = await this.sendV7RequestWithHeaders(
+      "GET",
+      path,
+      null,
+      accessToken,
+      { "X-Kso-Id-Type": idType }
+    );
+
+    if (result.code !== 0) {
+      throw new Error(`获取用户邮箱失败: ${result.msg || "未知错误"}`);
+    }
+
+    return result.data;
   }
 
   /**
