@@ -64,6 +64,12 @@ export type {
   RichTextElement,
   UserMailbox,
   UserIdType,
+  UserStatus,
+  UserRole,
+  DepartmentInfo,
+  UserInfoByEmail,
+  GetUsersByEmailsRequest,
+  GetUsersByEmailsResponse,
 } from "./src/client.js";
 
 // 富文本辅助函数

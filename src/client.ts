@@ -65,6 +65,76 @@ export interface UserMailbox {
 }
 
 /**
+ * 用户状态类型
+ */
+export type UserStatus = "active" | "notactive" | "disabled" | "dimission";
+
+/**
+ * 用户角色类型
+ */
+export type UserRole = "super-admin" | "admin" | "normal";
+
+/**
+ * 部门信息
+ */
+export interface DepartmentInfo {
+  /** 部门绝对路径 */
+  abs_path: string;
+  /** 部门ID */
+  id: string;
+  /** 部门名称 */
+  name: string;
+}
+
+/**
+ * 用户信息（根据邮箱查询返回）
+ */
+export interface UserInfoByEmail {
+  /** 头像 */
+  avatar: string;
+  /** 创建时间 */
+  ctime: number;
+  /** 部门信息列表（当with_dept=true时返回） */
+  depts?: DepartmentInfo[];
+  /** 邮箱 */
+  email: string;
+  /** 外部身份源ID */
+  ex_user_id: string;
+  /** 用户ID */
+  id: string;
+  /** 手机号码 */
+  phone: string;
+  /** 用户角色 */
+  role: UserRole;
+  /** 用户状态 */
+  status: UserStatus;
+  /** 职务信息 */
+  title: string;
+  /** 用户名称 */
+  user_name: string;
+}
+
+/**
+ * 根据邮箱查询用户请求参数
+ */
+export interface GetUsersByEmailsRequest {
+  /** 用户邮箱列表 */
+  emails: string[];
+  /** 用户状态列表，必填。active=正常；notactive=未激活；disabled=禁用 */
+  status: UserStatus[];
+  /** 是否需要返回部门信息，默认为false */
+  with_dept?: boolean;
+}
+
+/**
+ * 根据邮箱查询用户响应
+ */
+export interface GetUsersByEmailsResponse {
+  /** 用户信息列表 */
+  items: UserInfoByEmail[];
+}
+
+/**
  * 用户ID类型
  */
 export type UserIdType = "internal" | "external";
@@ -704,6 +774,49 @@ export class WPSClient {
 
     if (result.code !== 0) {
       throw new Error(`获取用户邮箱失败: ${result.msg || "未知错误"}`);
+    }
+
+    return result.data;
+  }
+
+  /**
+   * 根据邮箱获取用户信息
+   *
+   * API文档: https://openapi.wps.cn/v7/users/by_emails
+   * 方法: POST
+   * 权限: kso.contact.readwrite 或 kso.contact.read
+   *
+   * @param request 请求参数
+   * @returns 用户信息列表
+   */
+  async getUsersByEmails(
+    request: GetUsersByEmailsRequest
+  ): Promise<GetUsersByEmailsResponse> {
+    if (!request.emails || request.emails.length === 0) {
+      throw new Error("emails 不能为空");
+    }
+
+    if (!request.status || request.status.length === 0) {
+      throw new Error("status 不能为空");
+    }
+
+    const accessToken = await oauthTokenManager.getAccessToken(
+      this.appId,
+      this.secretKey,
+      this.apiUrl
+    );
+
+    const path = `/v7/users/by_emails`;
+    const body = {
+      emails: request.emails,
+      status: request.status,
+      with_dept: request.with_dept ?? false,
+    };
+
+    const result = await this.sendV7Request("POST", path, body, accessToken);
+
+    if (result.code !== 0) {
+      throw new Error(`根据邮箱获取用户失败: ${result.msg || "未知错误"}`);
     }
 
     return result.data;

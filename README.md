@@ -90,6 +90,45 @@ await client.sendRichTextMessage([
 ], 'chat-id', 'group');
 ```
 
+### 用户信息查询
+
+SDK支持查询用户信息：
+
+```typescript
+import { WpsClient } from '@skyispainted/wps-xiezuo-sdk';
+
+const client = new WpsClient(
+  'your-app-id',
+  'your-secret-key',
+  'https://openapi.wps.cn'
+);
+
+// 根据邮箱查询用户
+const users = await client.getUsersByEmails({
+  emails: ['user1@example.com', 'user2@example.com'],
+  status: ['active'],  // 用户状态：active/notactive/disabled
+  with_dept: true,     // 可选，是否返回部门信息
+});
+
+// 返回用户信息列表
+users.items.forEach(user => {
+  console.log(`用户名: ${user.user_name}`);
+  console.log(`邮箱: ${user.email}`);
+  console.log(`状态: ${user.status}`);
+  console.log(`角色: ${user.role}`);
+  if (user.depts) {
+    user.depts.forEach(dept => {
+      console.log(`部门: ${dept.name} (${dept.abs_path})`);
+    });
+  }
+});
+
+// 根据用户ID获取邮箱信息
+const mailbox = await client.getUserMailbox('user-id');
+console.log(`邮箱: ${mailbox.email_address}`);
+console.log(`是否主邮箱: ${mailbox.is_primary}`);
+```
+
 ### 自定义HTTP服务器
 
 接入Express、Koa等框架：
