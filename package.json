@@ -1,6 +1,6 @@
 {
   "name": "@skyispainted/wps-xiezuo-sdk",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "WPS协作机器人SDK - 用于构建WPS协作企业机器人应用",
   "keywords": [
     "wps",
@@ -45,7 +45,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "type-check": "tsc -p tsconfig.json --noEmit",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "zod": "^4.3.6"
